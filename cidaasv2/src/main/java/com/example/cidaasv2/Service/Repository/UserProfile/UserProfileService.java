@@ -10,7 +10,9 @@ import com.example.cidaasv2.Helper.Extension.WebAuthError;
 import com.example.cidaasv2.Helper.Genral.DBHelper;
 import com.example.cidaasv2.Helper.Genral.URLHelper;
 import com.example.cidaasv2.Helper.pkce.OAuthChallengeGenerator;
+import com.example.cidaasv2.Service.CidaassdkService;
 import com.example.cidaasv2.Service.Entity.UserProfile.UserprofileResponseEntity;
+import com.example.cidaasv2.Service.ICidaasSDKService;
 import com.example.mylibrary.R;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -108,6 +110,7 @@ public class UserProfileService {
             headers.put("device-version", deviceInfoEntity.getDeviceVersion());
 
             //Call Service-getRequestId
+
             ICidaasSDKService cidaasSDKService = service.getInstance();
             cidaasSDKService.getInternalUserProfileInfo(InternalUserProfileUrl,headers).enqueue(new Callback<UserprofileResponseEntity>() {
                 @Override
