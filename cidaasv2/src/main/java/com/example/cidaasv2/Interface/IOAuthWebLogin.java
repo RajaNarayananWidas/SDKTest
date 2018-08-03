@@ -98,16 +98,13 @@ public interface IOAuthWebLogin {
 
 
     void configureFaceRecognition(File faceimageFile, String sub, Result<EnrollFaceMFAResponseEntity> result);
-    void configureFIDO(String sub, Result<EnrollFIDOMFAResponseEntity> result);
+
     void configureFingerprint(String sub, Result<EnrollFingerprintMFAResponseEntity> result);
     void configurePatternRecognition(String patternString, String sub, Result<EnrollPatternMFAResponseEntity> result);
     void configureSmartPush(String sub, Result<EnrollSmartPushMFAResponseEntity> result);
     void configureTOTP(String sub, Result<EnrollTOTPMFAResponseEntity> result);
     void configureVoiceRecognition(File VoiceaudioFile, String sub, Result<EnrollVoiceMFAResponseEntity> result);
 
-
-    //Browser opening methods
-    void loginWithBrowser(String color, Result<AccessTokenEntity> result);
 
 
     void getRegisterationFields(String requestId, String acceptLanguage, Result<RegistrationSetupResponseEntity> result);

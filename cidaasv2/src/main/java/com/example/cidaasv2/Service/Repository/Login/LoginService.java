@@ -16,8 +16,8 @@ import com.example.cidaasv2.Service.Entity.LoginCredentialsEntity.LoginCredentia
 import com.example.cidaasv2.Service.Entity.LoginCredentialsEntity.LoginCredentialsResponseErrorEntity;
 import com.example.cidaasv2.Service.Entity.LoginCredentialsEntity.ResumeLogin.ResumeLoginRequestEntity;
 import com.example.cidaasv2.Service.Entity.LoginCredentialsEntity.ResumeLogin.ResumeLoginResponseEntity;
-import com.example.cidaasv2.Service.Repository.CidaassdkService;
-import com.example.cidaasv2.Service.Repository.ICidaasSDKService;
+import com.example.cidaasv2.Service.CidaassdkService;
+import com.example.cidaasv2.Service.ICidaasSDKService;
 import com.example.mylibrary.R;
 import com.fasterxml.jackson.databind.ObjectMapper;
 

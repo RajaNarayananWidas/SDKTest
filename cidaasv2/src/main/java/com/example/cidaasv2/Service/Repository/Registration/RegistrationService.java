@@ -19,8 +19,8 @@ import com.example.cidaasv2.Service.Register.RegisterUserAccountVerification.Reg
 import com.example.cidaasv2.Service.Register.RegistrationSetup.RegistrationSetupErrorEntity;
 import com.example.cidaasv2.Service.Register.RegistrationSetup.RegistrationSetupRequestEntity;
 import com.example.cidaasv2.Service.Register.RegistrationSetup.RegistrationSetupResponseEntity;
-import com.example.cidaasv2.Service.Repository.CidaassdkService;
-import com.example.cidaasv2.Service.Repository.ICidaasSDKService;
+import com.example.cidaasv2.Service.CidaassdkService;
+import com.example.cidaasv2.Service.ICidaasSDKService;
 import com.example.mylibrary.R;
 import com.fasterxml.jackson.databind.ObjectMapper;
 

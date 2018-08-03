@@ -11,8 +11,8 @@ import com.example.cidaasv2.Helper.Genral.DBHelper;
 import com.example.cidaasv2.Helper.Genral.URLHelper;
 import com.example.cidaasv2.Service.Entity.AuthRequest.AuthRequestEntity;
 import com.example.cidaasv2.Service.Entity.AuthRequest.AuthRequestResponseEntity;
-import com.example.cidaasv2.Service.Repository.CidaassdkService;
-import com.example.cidaasv2.Service.Repository.ICidaasSDKService;
+import com.example.cidaasv2.Service.CidaassdkService;
+import com.example.cidaasv2.Service.ICidaasSDKService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;

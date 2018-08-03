@@ -9,30 +9,114 @@ import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.example.cidaasv2.Controller.Client.ClientController;
-import com.example.cidaasv2.Controller.Login.LoginController;
-import com.example.cidaasv2.Controller.RequestId.RequestIdController;
-import com.example.cidaasv2.Controller.Tenant.TenantController;
+import com.example.cidaasv2.Controller.Repository.AccessToken.AccessTokenController;
+import com.example.cidaasv2.Controller.Repository.ChangePassword.ChangePasswordController;
+import com.example.cidaasv2.Controller.Repository.Client.ClientController;
+import com.example.cidaasv2.Controller.Repository.Configuration.BackupCode.BackupCodeConfigurationController;
+import com.example.cidaasv2.Controller.Repository.Configuration.Email.EmailConfigurationController;
+import com.example.cidaasv2.Controller.Repository.Configuration.Face.FaceConfigurationController;
+import com.example.cidaasv2.Controller.Repository.Configuration.Fingerprint.FingerprintConfigurationController;
+import com.example.cidaasv2.Controller.Repository.Configuration.IVR.IVRConfigurationController;
+import com.example.cidaasv2.Controller.Repository.Configuration.Pattern.PatternConfigurationController;
+import com.example.cidaasv2.Controller.Repository.Configuration.SMS.SMSConfigurationController;
+import com.example.cidaasv2.Controller.Repository.Configuration.SmartPush.SmartPushConfigurationController;
+import com.example.cidaasv2.Controller.Repository.Configuration.TOTP.TOTPConfigurationController;
+import com.example.cidaasv2.Controller.Repository.Configuration.Voice.VoiceConfigurationController;
+import com.example.cidaasv2.Controller.Repository.Consent.ConsentController;
+import com.example.cidaasv2.Controller.Repository.Deduplication.DeduplicationController;
+import com.example.cidaasv2.Controller.Repository.Login.LoginController;
+import com.example.cidaasv2.Controller.Repository.MFASettings.MFAListSettingsController;
+import com.example.cidaasv2.Controller.Repository.Registration.RegistrationController;
+import com.example.cidaasv2.Controller.Repository.RequestId.RequestIdController;
+import com.example.cidaasv2.Controller.Repository.ResetPassword.ResetPasswordController;
+import com.example.cidaasv2.Controller.Repository.Tenant.TenantController;
 import com.example.cidaasv2.Helper.Entity.DeviceInfoEntity;
 import com.example.cidaasv2.Helper.Entity.LoginEntity;
+import com.example.cidaasv2.Helper.Entity.RegistrationEntity;
 import com.example.cidaasv2.Helper.Enums.HttpStatusCode;
 import com.example.cidaasv2.Helper.Enums.Result;
+import com.example.cidaasv2.Helper.Enums.UsageType;
 import com.example.cidaasv2.Helper.Enums.WebAuthErrorCode;
 import com.example.cidaasv2.Helper.Extension.WebAuthError;
 import com.example.cidaasv2.Helper.Genral.DBHelper;
 import com.example.cidaasv2.Helper.Genral.FileHelper;
 import com.example.cidaasv2.Helper.Logger.LogFile;
+import com.example.cidaasv2.Interface.IOAuthWebLogin;
 import com.example.cidaasv2.Service.Entity.AccessTokenEntity;
 import com.example.cidaasv2.Service.Entity.AuthRequest.AuthRequestResponseEntity;
 import com.example.cidaasv2.Service.Entity.ClientInfo.ClientInfoEntity;
+import com.example.cidaasv2.Service.Entity.ConsentManagement.ConsentDetailsResultEntity;
+import com.example.cidaasv2.Service.Entity.ConsentManagement.ConsentManagementAcceptedRequestEntity;
+import com.example.cidaasv2.Service.Entity.Deduplication.DeduplicationResponseEntity;
+import com.example.cidaasv2.Service.Entity.Deduplication.LoginDeduplication.LoginDeduplicationResponseEntity;
+import com.example.cidaasv2.Service.Entity.Deduplication.RegisterDeduplication.RegisterDeduplicationEntity;
 import com.example.cidaasv2.Service.Entity.LoginCredentialsEntity.LoginCredentialsRequestEntity;
 import com.example.cidaasv2.Service.Entity.LoginCredentialsEntity.LoginCredentialsResponseEntity;
+import com.example.cidaasv2.Service.Entity.MFA.AuthenticateMFA.BackupCode.AuthenticateBackupCodeRequestEntity;
+import com.example.cidaasv2.Service.Entity.MFA.AuthenticateMFA.Email.AuthenticateEmailRequestEntity;
+import com.example.cidaasv2.Service.Entity.MFA.AuthenticateMFA.Face.AuthenticateFaceRequestEntity;
+import com.example.cidaasv2.Service.Entity.MFA.AuthenticateMFA.IVR.AuthenticateIVRRequestEntity;
+import com.example.cidaasv2.Service.Entity.MFA.AuthenticateMFA.Pattern.AuthenticatePatternResponseEntity;
+import com.example.cidaasv2.Service.Entity.MFA.AuthenticateMFA.SMS.AuthenticateSMSRequestEntity;
+import com.example.cidaasv2.Service.Entity.MFA.AuthenticateMFA.SmartPush.AuthenticateSmartPushRequestEntity;
+import com.example.cidaasv2.Service.Entity.MFA.AuthenticateMFA.Voice.AuthenticateVoiceRequestEntity;
+import com.example.cidaasv2.Service.Entity.MFA.EnrollMFA.Email.EnrollEmailMFAResponseEntity;
+import com.example.cidaasv2.Service.Entity.MFA.EnrollMFA.Face.EnrollFaceMFAResponseEntity;
+import com.example.cidaasv2.Service.Entity.MFA.EnrollMFA.Fingerprint.EnrollFingerprintMFAResponseEntity;
+import com.example.cidaasv2.Service.Entity.MFA.EnrollMFA.IVR.EnrollIVRMFAResponseEntity;
+import com.example.cidaasv2.Service.Entity.MFA.EnrollMFA.Pattern.EnrollPatternMFAResponseEntity;
+import com.example.cidaasv2.Service.Entity.MFA.EnrollMFA.SMS.EnrollSMSMFAResponseEntity;
+import com.example.cidaasv2.Service.Entity.MFA.EnrollMFA.SmartPush.EnrollSmartPushMFAResponseEntity;
+import com.example.cidaasv2.Service.Entity.MFA.EnrollMFA.TOTP.EnrollTOTPMFAResponseEntity;
+import com.example.cidaasv2.Service.Entity.MFA.EnrollMFA.Voice.EnrollVoiceMFAResponseEntity;
+import com.example.cidaasv2.Service.Entity.MFA.InitiateMFA.BackupCode.InitiateBackupCodeMFARequestEntity;
+import com.example.cidaasv2.Service.Entity.MFA.InitiateMFA.Email.InitiateEmailMFARequestEntity;
+import com.example.cidaasv2.Service.Entity.MFA.InitiateMFA.Email.InitiateEmailMFAResponseEntity;
+import com.example.cidaasv2.Service.Entity.MFA.InitiateMFA.Face.InitiateFaceMFARequestEntity;
+import com.example.cidaasv2.Service.Entity.MFA.InitiateMFA.Fingerprint.InitiateFingerprintMFARequestEntity;
+import com.example.cidaasv2.Service.Entity.MFA.InitiateMFA.IVR.InitiateIVRMFARequestEntity;
+import com.example.cidaasv2.Service.Entity.MFA.InitiateMFA.IVR.InitiateIVRMFAResponseEntity;
+import com.example.cidaasv2.Service.Entity.MFA.InitiateMFA.Pattern.InitiatePatternMFARequestEntity;
+import com.example.cidaasv2.Service.Entity.MFA.InitiateMFA.SMS.InitiateSMSMFARequestEntity;
+import com.example.cidaasv2.Service.Entity.MFA.InitiateMFA.SMS.InitiateSMSMFAResponseEntity;
+import com.example.cidaasv2.Service.Entity.MFA.InitiateMFA.SmartPush.InitiateSmartPushMFARequestEntity;
+import com.example.cidaasv2.Service.Entity.MFA.InitiateMFA.TOTP.InitiateTOTPMFARequestEntity;
+import com.example.cidaasv2.Service.Entity.MFA.InitiateMFA.Voice.InitiateVoiceMFARequestEntity;
+import com.example.cidaasv2.Service.Entity.MFA.MFAList.MFAListResponseEntity;
+import com.example.cidaasv2.Service.Entity.MFA.SetupMFA.BackupCode.SetupBackupCodeMFAResponseEntity;
+import com.example.cidaasv2.Service.Entity.MFA.SetupMFA.Email.SetupEmailMFAResponseEntity;
+import com.example.cidaasv2.Service.Entity.MFA.SetupMFA.Face.SetupFaceMFARequestEntity;
+import com.example.cidaasv2.Service.Entity.MFA.SetupMFA.Fingerprint.SetupFingerprintMFARequestEntity;
+import com.example.cidaasv2.Service.Entity.MFA.SetupMFA.IVR.SetupIVRMFAResponseEntity;
+import com.example.cidaasv2.Service.Entity.MFA.SetupMFA.Pattern.SetupPatternMFARequestEntity;
+import com.example.cidaasv2.Service.Entity.MFA.SetupMFA.SMS.SetupSMSMFAResponseEntity;
+import com.example.cidaasv2.Service.Entity.MFA.SetupMFA.SmartPush.SetupSmartPushMFARequestEntity;
+import com.example.cidaasv2.Service.Entity.MFA.SetupMFA.TOTP.SetupTOTPMFARequestEntity;
+import com.example.cidaasv2.Service.Entity.MFA.SetupMFA.Voice.SetupVoiceMFARequestEntity;
+import com.example.cidaasv2.Service.Entity.ResetPassword.ChangePassword.ChangePasswordRequestEntity;
+import com.example.cidaasv2.Service.Entity.ResetPassword.ChangePassword.ChangePasswordResponseEntity;
+import com.example.cidaasv2.Service.Entity.ResetPassword.ResetNewPassword.ResetNewPasswordResponseEntity;
+import com.example.cidaasv2.Service.Entity.ResetPassword.ResetPasswordRequestEntity;
+import com.example.cidaasv2.Service.Entity.ResetPassword.ResetPasswordResponseEntity;
+import com.example.cidaasv2.Service.Entity.ResetPassword.ResetPasswordValidateCode.ResetPasswordValidateCodeResponseEntity;
 import com.example.cidaasv2.Service.Entity.TenantInfo.TenantInfoEntity;
+import com.example.cidaasv2.Service.Entity.UserinfoEntity;
+import com.example.cidaasv2.Service.Register.RegisterUser.RegisterNewUserRequestEntity;
+import com.example.cidaasv2.Service.Register.RegisterUser.RegisterNewUserResponseEntity;
+import com.example.cidaasv2.Service.Register.RegisterUserAccountVerification.RegisterUserAccountInitiateRequestEntity;
+import com.example.cidaasv2.Service.Register.RegisterUserAccountVerification.RegisterUserAccountInitiateResponseEntity;
+import com.example.cidaasv2.Service.Register.RegisterUserAccountVerification.RegisterUserAccountVerifyResponseEntity;
+import com.example.cidaasv2.Service.Register.RegistrationSetup.RegistrationSetupRequestEntity;
+import com.example.cidaasv2.Service.Register.RegistrationSetup.RegistrationSetupResponseEntity;
+import com.example.cidaasv2.Service.Repository.OauthService;
 
+import java.io.File;
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 import timber.log.Timber;
 
@@ -43,7 +127,7 @@ import static android.os.Build.VERSION;
  * Created by widasrnarayanan on 16/1/18.
  */
 
-public class Cidaas  {
+public class Cidaas  implements IOAuthWebLogin{
 
     public Context context;
 
@@ -176,6 +260,7 @@ public class Cidaas  {
 
     //Get Request Id By Passing loginProperties as Value in parameters
 
+    @Override
     public void getRequestId(@NonNull String DomainUrl, @NonNull String ClientId, @NonNull String RedirectURL,
                              @Nullable String ClientSecret, final Result<AuthRequestResponseEntity> result)
     {
@@ -236,6 +321,7 @@ public class Cidaas  {
 
     //Get Request Id without passing any value
 
+    @Override
     public void getRequestId(final Result<AuthRequestResponseEntity> resulttoReturn)
     {
         try {
@@ -283,6 +369,8 @@ public class Cidaas  {
     }
 
    // -----------------------------------------------------***** TENANT INFO *****-------------------------------------------------------------------------
+
+    @Override
     public void getTenantInfo(final Result<TenantInfoEntity> tenantresult) {
         try{
             checkSavedProperties(new Result<Dictionary<String, String>>() {
@@ -309,6 +397,7 @@ public class Cidaas  {
 
 
 
+    @Override
     public void getClientInfo(final String RequestId, final Result<ClientInfoEntity> clientInfoEntityResult)
     {
         try{
@@ -350,7 +439,7 @@ public class Cidaas  {
     // -----------------------------------------------------***** LOGIN WITH CREDENTIALS *****---------------------------------------------------------------
 
 
-   // @Override
+    @Override
     public void loginWithCredentials(final String requestId, final LoginEntity loginEntity,
                                      final Result<LoginCredentialsResponseEntity> loginresult)
     {
@@ -403,7 +492,7 @@ public class Cidaas  {
                     errorMessage, HttpStatusCode.EXPECTATION_FAILED));
         }
     }
-   /*
+
     // -----------------------------------------------------***** CONSENT MANAGEMENT *****---------------------------------------------------------------
 
     public void getConsentDetails(@NonNull final String Name, @NonNull final String Version, @NonNull final String trackId,
@@ -671,14 +760,14 @@ public class Cidaas  {
                         authenticateEmailRequestEntity.setCode(code);
 
                         EmailConfigurationController.getShared(context).verifyEmail(baseurl,code,clientId,authenticateEmailRequestEntity,loginresult);
-*//*
+/*
                           String userDeviceId = DBHelper.getShared().getUserDeviceId(baseurl);
 
                           if (userDeviceId != null && !userDeviceId.equals("")) {
                               authenticatePatternRequestEntity.setUserDeviceId(userDeviceId);
                           } else {
                               loginresult.failure(WebAuthError.getShared(context).propertyMissingException());
-                          }*//*
+                          }*/
                     }
                     else {
                         loginresult.failure(WebAuthError.getShared(context).propertyMissingException());
@@ -787,7 +876,7 @@ public class Cidaas  {
                         initiateSMSMFARequestEntity.setUsageType(usageType);
                         initiateSMSMFARequestEntity.setVerificationType("SMS");
 
-                     *//*   String userDeviceId=DBHelper.getShared().getUserDeviceId(baseurl);
+                     /*   String userDeviceId=DBHelper.getShared().getUserDeviceId(baseurl);
                         if(userDeviceId!=null && !userDeviceId.equals("") ) {
                             initiateSMSMFARequestEntity.setUserDeviceId(userDeviceId);
                         }
@@ -798,7 +887,7 @@ public class Cidaas  {
                             initiateresult.failure(WebAuthError.getShared(context).customException(WebAuthErrorCode.PROPERTY_MISSING,
                                     errorMessage,HttpStatusCode.EXPECTATION_FAILED));
                         }
-                        *//*
+                        */
                         SMSConfigurationController.getShared(context).loginWithSMS(baseurl,trackId,clientId,requestId,initiateSMSMFARequestEntity,initiateresult);
                     }
                     else
@@ -839,14 +928,14 @@ public class Cidaas  {
                         authenticateSMSRequestEntity.setCode(code);
 
                         SMSConfigurationController.getShared(context).verifySMS(baseurl,clientId,authenticateSMSRequestEntity,loginresult);
-*//*
+/*
                           String userDeviceId = DBHelper.getShared().getUserDeviceId(baseurl);
 
                           if (userDeviceId != null && !userDeviceId.equals("")) {
                               authenticatePatternRequestEntity.setUserDeviceId(userDeviceId);
                           } else {
                               loginresult.failure(WebAuthError.getShared(context).propertyMissingException());
-                          }*//*
+                          }*/
                     }
                     else {
                         String errorMessage="code must not be empty";
@@ -961,7 +1050,7 @@ public class Cidaas  {
                         initiateIVRMFARequestEntity.setUsageType(usageType);
                         initiateIVRMFARequestEntity.setVerificationType("IVR");
 
-                     *//*   String userDeviceId=DBHelper.getShared().getUserDeviceId(baseurl);
+                     /*   String userDeviceId=DBHelper.getShared().getUserDeviceId(baseurl);
                         if(userDeviceId!=null && !userDeviceId.equals("") ) {
                             initiateIVRMFARequestEntity.setUserDeviceId(userDeviceId);
                         }
@@ -972,7 +1061,7 @@ public class Cidaas  {
                             initiateresult.failure(WebAuthError.getShared(context).customException(WebAuthErrorCode.PROPERTY_MISSING,
                                     errorMessage,HttpStatusCode.EXPECTATION_FAILED));
                         }
-                        *//*
+                        */
                         IVRConfigurationController.getShared(context).loginWithIVR(baseurl,trackId,clientId,requestId,initiateIVRMFARequestEntity,initiateresult);
                     }
                     else
@@ -1012,14 +1101,14 @@ public class Cidaas  {
                         authenticateIVRRequestEntity.setCode(code);
 
                         IVRConfigurationController.getShared(context).verifyIVR(baseurl,clientId,authenticateIVRRequestEntity,loginresult);
-*//*
+/*
                           String userDeviceId = DBHelper.getShared().getUserDeviceId(baseurl);
 
                           if (userDeviceId != null && !userDeviceId.equals("")) {
                               authenticatePatternRequestEntity.setUserDeviceId(userDeviceId);
                           } else {
                               loginresult.failure(WebAuthError.getShared(context).propertyMissingException());
-                          }*//*
+                          }*/
                     }
                     else {
                         String errorMessage="code must not be empty";
@@ -1101,7 +1190,7 @@ public class Cidaas  {
                         initiateBackupCodeMFARequestEntity.setUsageType(usageType);
                         initiateBackupCodeMFARequestEntity.setVerificationType("BACKUPCODE");
 
-                     *//*   String userDeviceId=DBHelper.getShared().getUserDeviceId(baseurl);
+                     /*   String userDeviceId=DBHelper.getShared().getUserDeviceId(baseurl);
                         if(userDeviceId!=null && !userDeviceId.equals("") ) {
                             initiateBackupCodeMFARequestEntity.setUserDeviceId(userDeviceId);
                         }
@@ -1112,7 +1201,7 @@ public class Cidaas  {
                             initiateresult.failure(WebAuthError.getShared(context).customException(WebAuthErrorCode.PROPERTY_MISSING,
                                     errorMessage,HttpStatusCode.EXPECTATION_FAILED));
                         }
-                        *//*
+                        */
                         BackupCodeConfigurationController.getShared(context).loginWithBackupCode(code,baseurl,trackId,clientId,requestId,initiateBackupCodeMFARequestEntity,loginresult);
                     }
                     else
@@ -1151,14 +1240,14 @@ public class Cidaas  {
                         authenticateBackupCodeRequestEntity.setVerifierPassword(code);
 
                         BackupCodeConfigurationController.getShared(context).verifyBackupCode(baseurl,clientId,authenticateBackupCodeRequestEntity,loginresult);
-*//*
+/*
                           String userDeviceId = DBHelper.getShared().getUserDeviceId(baseurl);
 
                           if (userDeviceId != null && !userDeviceId.equals("")) {
                               authenticatePatternRequestEntity.setUserDeviceId(userDeviceId);
                           } else {
                               loginresult.failure(WebAuthError.getShared(context).propertyMissingException());
-                          }*//*
+                          }*/
                     }
                     else {
                         String errorMessage="code must not be empty";
@@ -1351,7 +1440,7 @@ loginresult.failure(error);
 
 
     @Override
-    public void configureFaceRecognition(final File faceImageFile,final String sub,  final Result<EnrollFaceMFAResponseEntity> enrollresult) {
+    public void configureFaceRecognition(final File faceImageFile, final String sub, final Result<EnrollFaceMFAResponseEntity> enrollresult) {
         try {
 
 
@@ -2196,14 +2285,14 @@ loginresult.failure(error);
                     RegisterUserAccountInitiateRequestEntity registerUserAccountInitiateRequestEntity=new RegisterUserAccountInitiateRequestEntity();
                     registerUserAccountInitiateRequestEntity.setProcessingType("CODE");
 
-                 *//*   if(verificationMedium.equals("") || verificationMedium.equals(null))
+                 /*   if(verificationMedium.equals("") || verificationMedium.equals(null))
                     {
                         registerUserAccountInitiateRequestEntity.setVerificationMedium("email");
                     }
                     else
                     {
                         registerUserAccountInitiateRequestEntity.setVerificationMedium(verificationMedium);
-                    }*//*
+                    }*/
                     registerUserAccountInitiateRequestEntity.setVerificationMedium("email");
 
                     registerUserAccountInitiateRequestEntity.setSub(sub);
@@ -2240,14 +2329,14 @@ loginresult.failure(error);
                     registerUserAccountInitiateRequestEntity.setVerificationMedium("sms");
                     registerUserAccountInitiateRequestEntity.setSub(sub);
                     registerUserAccountInitiateRequestEntity.setRequestId(requestId);
-                 *//*   if(verificationMedium.equals("") || verificationMedium.equals(null))
+                 /*   if(verificationMedium.equals("") || verificationMedium.equals(null))
                     {
                         registerUserAccountInitiateRequestEntity.setVerificationMedium("email");
                     }
                     else
                     {
                         registerUserAccountInitiateRequestEntity.setVerificationMedium(verificationMedium);
-                    }*//*
+                    }*/
 
 
                     RegistrationController.getShared(context).initiateAccountVerificationService(baseurl,registerUserAccountInitiateRequestEntity,Result);
@@ -2283,14 +2372,14 @@ loginresult.failure(error);
                     registerUserAccountInitiateRequestEntity.setSub(sub);
                     registerUserAccountInitiateRequestEntity.setRequestId(requestId);
 
-                 *//*   if(verificationMedium.equals("") || verificationMedium.equals(null))
+                 /*   if(verificationMedium.equals("") || verificationMedium.equals(null))
                     {
                         registerUserAccountInitiateRequestEntity.setVerificationMedium("email");
                     }
                     else
                     {
                         registerUserAccountInitiateRequestEntity.setVerificationMedium(verificationMedium);
-                    }*//*
+                    }*/
 
 
                     RegistrationController.getShared(context).initiateAccountVerificationService(baseurl,registerUserAccountInitiateRequestEntity,Result);
@@ -2434,7 +2523,7 @@ loginresult.failure(error);
             @Override
             public void success(Dictionary<String, String> result) {
                 String baseurl = savedProperties.get("DomainURL");
-                String clientId=savedProperties.get("ClientId");*//**//*
+                String clientId=savedProperties.get("ClientId");/**/
 
                 resetPasswordRequestEntity.setProcessingType("CODE");
                 resetPasswordRequestEntity.setRequestId(requestId);
@@ -2565,8 +2654,8 @@ loginresult.failure(error);
 
 
 
-*//*
-    public void getUserInfo(@NonNull String AccessToken,)*//*
+/*
+    public void getUserInfo(@NonNull String AccessToken,)/*
     //To Open Browser
     @Override
     public void loginWithBrowser(@Nullable String color, Result<AccessTokenEntity> callbacktoMain)
@@ -2604,21 +2693,20 @@ loginresult.failure(error);
         }
     }
 
-
+*/
 
     //Todo sConsult and Create a  new Resume if the loginCallback is null
     //Get Code By URl
     @Override
     public void getLoginCode(String url,Result<AccessTokenEntity> callback) {
        try {
-           showLoader();
+
            String code = getCodeFromUrl(url);
            if (code != null) {
-               hideLoader();
 
                getAccessTokenByCode(code, callback);
            } else {
-               hideLoader();
+
                String loggerMessage = "Request-Id params to dictionary conversion failure : " + "Error Code - ";
                //+error.errorCode + ", Error Message - " + error.ErrorMessage + ", Status Code - " +  error.statusCode;
                LogFile.addRecordToLog(loggerMessage);
@@ -2728,17 +2816,17 @@ loginresult.failure(error);
     @Override
     public void getUserInfo(String access_token, final Result<UserinfoEntity> callback) {
         try {
-            showLoader();
+
             OauthService.getShared(context).getUserinfo(access_token, new Result<UserinfoEntity>() {
                 @Override
                 public void success(UserinfoEntity result) {
-                    hideLoader();
+
                     callback.success(result);
                 }
 
                 @Override
                 public void failure(WebAuthError error) {
-                    hideLoader();
+
                     callback.failure(error);
                 }
             });
@@ -2855,54 +2943,18 @@ loginresult.failure(error);
         }
     }
 
-    //To Show Loader
-    private void showLoader(){
-       try {
-
-
-           if (loader != null) {
-               // handle already running
-               if (!displayLoader) {
-                   loader.showLoader();
-                   displayLoader = true;
-               }
-           }
-       }
-       catch (Exception e)
-       {
-           //Todo Handle Exception
-       }
-
-    }
-    //To Hide Loader
-    private void hideLoader() {
-        try {
-            if (loader != null) {
-                //handle already hiding
-                if (displayLoader) {
-                    loader.hideLoader();
-                    displayLoader = false;
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            Timber.d(ex.getMessage());  //Todo handle Exception
-        }
-    }
-
 
     //Resume After open App From Broswer
-    public void resume(String code)*//*,Result<AccessTokenEntity>... callbacktoMain*//*
+    public void resume(String code)//,Result<AccessTokenEntity>... callbacktoMain*//*
     {
         if(logincallback!=null) {
             getLoginCode(code, logincallback);
         }
-      *//* else if(callbacktoMain!=null)
+     /* else if(callbacktoMain!=null)
        {
-        *//**//*logincallback=()callbacktoMain;
+        *//*logincallback=()callbacktoMain;
         getLoginCode(code,callbacktoMain);*//**//*
-       }*//*
+       }*/
         //Todo Handle Else part and give Exception
 
     }
@@ -2910,16 +2962,7 @@ loginresult.failure(error);
 
 
 
-
-
-
-
-
-
-
-
-
-    *//*
+  /*
 
     public void resumeLogin(@NonNull final ResumeLoginRequestEntity resumeLoginRequestEntity , @NonNull final Result<AccessTokenEntity> loginresult)
     {
@@ -2949,8 +2992,7 @@ loginresult.failure(error);
             loginresult.failure(WebAuthError.getShared(context).propertyMissingException());
         }
     }
-*//*
-     */
+*/
 
     public  void checkSavedProperties(final Result<Dictionary<String, String> > result){
 
