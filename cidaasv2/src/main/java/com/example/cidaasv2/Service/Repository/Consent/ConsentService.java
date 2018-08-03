@@ -16,8 +16,6 @@ import com.example.cidaasv2.Service.Entity.ConsentManagement.ConsentManagementAc
 import com.example.cidaasv2.Service.Entity.ConsentManagement.ConsentManagementResponseEntity;
 import com.example.cidaasv2.Service.Entity.ConsentManagement.ResumeConsent.ResumeConsentRequestEntity;
 import com.example.cidaasv2.Service.Entity.ConsentManagement.ResumeConsent.ResumeConsentResponseEntity;
-import com.example.cidaasv2.Service.CidaassdkService;
-import com.example.cidaasv2.Service.ICidaasSDKService;
 import com.example.mylibrary.R;
 import com.fasterxml.jackson.databind.ObjectMapper;
 

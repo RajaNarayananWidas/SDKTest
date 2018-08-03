@@ -16,8 +16,6 @@ import com.example.cidaasv2.Service.Entity.ResetPassword.ResetPasswordRequestEnt
 import com.example.cidaasv2.Service.Entity.ResetPassword.ResetPasswordResponseEntity;
 import com.example.cidaasv2.Service.Entity.ResetPassword.ResetPasswordValidateCode.ResetPasswordValidateCodeRequestEntity;
 import com.example.cidaasv2.Service.Entity.ResetPassword.ResetPasswordValidateCode.ResetPasswordValidateCodeResponseEntity;
-import com.example.cidaasv2.Service.CidaassdkService;
-import com.example.cidaasv2.Service.ICidaasSDKService;
 import com.example.mylibrary.R;
 import com.fasterxml.jackson.databind.ObjectMapper;
 

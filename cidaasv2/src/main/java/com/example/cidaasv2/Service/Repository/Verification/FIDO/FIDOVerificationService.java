@@ -3,7 +3,6 @@ package com.example.cidaasv2.Service.Repository.Verification.FIDO;
 import android.content.Context;
 
 import com.example.cidaasv2.Helper.pkce.OAuthChallengeGenerator;
-import com.example.cidaasv2.Service.CidaassdkService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import timber.log.Timber;
