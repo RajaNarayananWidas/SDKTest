@@ -9,15 +9,25 @@ import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.example.cidaasv2.Controller.Client.ClientController;
+import com.example.cidaasv2.Controller.Login.LoginController;
 import com.example.cidaasv2.Controller.RequestId.RequestIdController;
+import com.example.cidaasv2.Controller.Tenant.TenantController;
 import com.example.cidaasv2.Helper.Entity.DeviceInfoEntity;
+import com.example.cidaasv2.Helper.Entity.LoginEntity;
+import com.example.cidaasv2.Helper.Enums.HttpStatusCode;
 import com.example.cidaasv2.Helper.Enums.Result;
+import com.example.cidaasv2.Helper.Enums.WebAuthErrorCode;
 import com.example.cidaasv2.Helper.Extension.WebAuthError;
 import com.example.cidaasv2.Helper.Genral.DBHelper;
 import com.example.cidaasv2.Helper.Genral.FileHelper;
 import com.example.cidaasv2.Helper.Logger.LogFile;
 import com.example.cidaasv2.Service.Entity.AccessTokenEntity;
 import com.example.cidaasv2.Service.Entity.AuthRequest.AuthRequestResponseEntity;
+import com.example.cidaasv2.Service.Entity.ClientInfo.ClientInfoEntity;
+import com.example.cidaasv2.Service.Entity.LoginCredentialsEntity.LoginCredentialsRequestEntity;
+import com.example.cidaasv2.Service.Entity.LoginCredentialsEntity.LoginCredentialsResponseEntity;
+import com.example.cidaasv2.Service.Entity.TenantInfo.TenantInfoEntity;
 
 import java.util.Dictionary;
 import java.util.HashMap;
@@ -272,8 +282,7 @@ public class Cidaas  {
         }
     }
 
-   /* // -----------------------------------------------------***** TENANT INFO *****-------------------------------------------------------------------------
-    @Override
+   // -----------------------------------------------------***** TENANT INFO *****-------------------------------------------------------------------------
     public void getTenantInfo(final Result<TenantInfoEntity> tenantresult) {
         try{
             checkSavedProperties(new Result<Dictionary<String, String>>() {
@@ -299,7 +308,7 @@ public class Cidaas  {
     // -----------------------------------------------------***** CLIENT INFO *****-------------------------------------------------------------------------
 
 
-    @Override
+
     public void getClientInfo(final String RequestId, final Result<ClientInfoEntity> clientInfoEntityResult)
     {
         try{
@@ -337,10 +346,11 @@ public class Cidaas  {
         }
     }
 
+
     // -----------------------------------------------------***** LOGIN WITH CREDENTIALS *****---------------------------------------------------------------
 
 
-    @Override
+   // @Override
     public void loginWithCredentials(final String requestId, final LoginEntity loginEntity,
                                      final Result<LoginCredentialsResponseEntity> loginresult)
     {
@@ -393,7 +403,7 @@ public class Cidaas  {
                     errorMessage, HttpStatusCode.EXPECTATION_FAILED));
         }
     }
-
+   /*
     // -----------------------------------------------------***** CONSENT MANAGEMENT *****---------------------------------------------------------------
 
     public void getConsentDetails(@NonNull final String Name, @NonNull final String Version, @NonNull final String trackId,
@@ -2658,46 +2668,6 @@ loginresult.failure(error);
     // 3. Done Call configure Pattern From Pattern Controller and return the result
     // 4. Done Maintain logs based on flags
 
-    public  void checkSavedProperties(final Result<Dictionary<String, String> > result){
-
-        if(savedProperties==null){
-            //Read from file if localDB is null
-            readFromFile(new Result<Dictionary<String, String>>() {
-                @Override
-                public void success(Dictionary<String, String> loginProperties) {
-                    savedProperties=loginProperties;
-                    if (savedProperties.get("DomainURL").equals("") || savedProperties.get("DomainURL") == null || savedProperties == null) {
-                        webAuthError = webAuthError.propertyMissingException();
-                        String loggerMessage = "Setup Pattern MFA readProperties failure : " + "Error Code - "
-                                + webAuthError.errorCode + ", Error Message - " + webAuthError.ErrorMessage + ", Status Code - " + webAuthError.statusCode;
-                        LogFile.addRecordToLog(loggerMessage);
-                        result.failure(webAuthError);
-                    }
-                    if (savedProperties.get("ClientId").equals("") || savedProperties.get("ClientId") == null || savedProperties == null) {
-                        webAuthError = webAuthError.propertyMissingException();
-                        String loggerMessage = "Accept Consent readProperties failure : " + "Error Code - "
-                                + webAuthError.errorCode + ", Error Message - " + webAuthError.ErrorMessage + ", Status Code - " + webAuthError.statusCode;
-
-                        LogFile.addRecordToLog(loggerMessage);
-                        result.failure(webAuthError);
-                    }
-                    result.success(savedProperties);
-
-                }
-
-                @Override
-                public void failure(WebAuthError error) {
-                    result.failure(error);
-                }
-            });
-        }
-        else
-        {
-            result.success(savedProperties);
-        }
-
-
-    }
 
     @Override
     public void loginWithFIDO(String usageType, String email, String sub, String trackId,final Result<LoginCredentialsResponseEntity> result)
@@ -2981,6 +2951,47 @@ loginresult.failure(error);
     }
 *//*
      */
+
+    public  void checkSavedProperties(final Result<Dictionary<String, String> > result){
+
+        if(savedProperties==null){
+            //Read from file if localDB is null
+            readFromFile(new Result<Dictionary<String, String>>() {
+                @Override
+                public void success(Dictionary<String, String> loginProperties) {
+                    savedProperties=loginProperties;
+                    if (savedProperties.get("DomainURL").equals("") || savedProperties.get("DomainURL") == null || savedProperties == null) {
+                        webAuthError = webAuthError.propertyMissingException();
+                        String loggerMessage = "Setup Pattern MFA readProperties failure : " + "Error Code - "
+                                + webAuthError.errorCode + ", Error Message - " + webAuthError.ErrorMessage + ", Status Code - " + webAuthError.statusCode;
+                        LogFile.addRecordToLog(loggerMessage);
+                        result.failure(webAuthError);
+                    }
+                    if (savedProperties.get("ClientId").equals("") || savedProperties.get("ClientId") == null || savedProperties == null) {
+                        webAuthError = webAuthError.propertyMissingException();
+                        String loggerMessage = "Accept Consent readProperties failure : " + "Error Code - "
+                                + webAuthError.errorCode + ", Error Message - " + webAuthError.ErrorMessage + ", Status Code - " + webAuthError.statusCode;
+
+                        LogFile.addRecordToLog(loggerMessage);
+                        result.failure(webAuthError);
+                    }
+                    result.success(savedProperties);
+
+                }
+
+                @Override
+                public void failure(WebAuthError error) {
+                    result.failure(error);
+                }
+            });
+        }
+        else
+        {
+            result.success(savedProperties);
+        }
+
+
+    }
 
 
     //ReadFromXML File
